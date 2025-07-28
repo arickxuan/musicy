@@ -1,174 +1,166 @@
 <script setup>
-import { ref } from "vue";
-import { invoke } from "@tauri-apps/api/core";
+import { ref } from 'vue';
+import StatusBar from './components/StatusBar.vue';
+import SearchField from './components/SearchField.vue';
+import PlayerCard from './components/PlayerCard.vue';
+import QuickActions from './components/QuickActions.vue';
+import PlaylistSection from './components/PlaylistSection.vue';
+import CurrentPlayingBar from './components/CurrentPlayingBar.vue';
+import BottomNavigation from './components/BottomNavigation.vue';
 
-const greetMsg = ref("");
-const name = ref("");
+import {getList} from './core/import_qq';
 
-async function greet() {
-  // Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
-  greetMsg.value = await invoke("greet", { name: name.value });
-}
+import { onMounted } from 'vue'
+
+onMounted(async () => {
+  console.log(`the component is now mounted.`)
+  let re = await getList(1839459328,true)
+  console.log(re)
+})
+
+const currentSong = ref({
+  title: '柠乐',
+  artist: '陈奕迅 - 孤独患者',
+  isPlaying: true,
+  cover: 'https://picsum.photos/seed/current/400/400'
+});
+
+const quickActions = ref([
+  { text: '白噪音', icon: 'mdi-sine-wave', color: '#FFD700' },
+  { text: '抖音热曲', icon: 'mdi-music-note', color: '#FF6B6B' },
+  { text: '我喜欢', icon: 'mdi-heart', color: '#4ECDC4' },
+  { text: '榜单', icon: 'mdi-trophy', color: '#45B7D1' },
+  { text: '歌单广场', icon: 'mdi-grid', color: '#96CEB4' },
+  { text: '歌单导入', icon: 'mdi-import', color: '#FFEAA7' },
+]);
+
+const playlists = ref([
+  {
+    title: '小众英文 | 遇见夏日的灵魂共鸣',
+    description: '2623播放',
+    image: 'https://picsum.photos/seed/playlist1/300/200',
+  },
+  {
+    title: '抖音热门 | 2025年爆款DJ精选',
+    description: '11万播放',
+    image: 'https://picsum.photos/seed/playlist2/300/200',
+  },
+  {
+    title: '梦回20行歌单',
+    description: '7万播放',
+    image: 'https://picsum.photos/seed/playlist3/300/200',
+  },
+]);
+
+const activeTab = ref('home');
+
+// 事件处理函数
+const handleSearch = (query) => {
+  console.log('搜索:', query);
+};
+
+const handleTogglePlay = (song) => {
+  currentSong.value.isPlaying = !currentSong.value.isPlaying;
+  console.log('播放状态切换:', song);
+};
+
+const handleQuickAction = (action) => {
+  console.log('快捷操作:', action.text);
+};
+
+const handlePlaylistClick = (playlist) => {
+  console.log('点击歌单:', playlist.title);
+};
+
+const handleMoreClick = () => {
+  console.log('查看更多歌单');
+};
+
+const handleCurrentPlayToggle = () => {
+  currentSong.value.isPlaying = !currentSong.value.isPlaying;
+};
+
+const handleShowPlaylist = () => {
+  console.log('显示播放列表');
+};
+
+const handleTabChange = (tab) => {
+  console.log('切换标签:', tab);
+};
 </script>
 
 <template>
+  <v-app theme="dark" class="music-app">
+    <!-- 状态栏组件 -->
+    <StatusBar />
 
+    <v-main class="main-content">
+      <v-container fluid class="pa-4">
+        <!-- 标题 -->
+        <div class="page-title mb-4">
+          <h1 class="text-h4 font-weight-bold">首页</h1>
+        </div>
 
+        <!-- 搜索框组件 -->
+        <SearchField 
+          class="mb-6"
+          @search="handleSearch"
+        />
 
+        <!-- 主要内容区域 -->
+        <v-row class="mb-4">
+          <!-- 正在播放组件 -->
+          <v-col cols="7">
+            <PlayerCard 
+              :song="currentSong"
+              @toggle-play="handleTogglePlay"
+            />
+          </v-col>
 
-  <v-app>
-    <v-container>
-      <v-row>
-        <v-col cols="12">
-          <p>{{ greetMsg }}</p>
-        </v-col>
-      </v-row>
-    </v-container>
-    <v-container>
-      <v-bottom-navigation>
-        <v-btn value="recent">
-          <v-icon>mdi-history</v-icon>
+          <!-- 快捷操作组件 -->
+          <v-col cols="5">
+            <QuickActions 
+              :actions="quickActions"
+              @action-click="handleQuickAction"
+            />
+          </v-col>
+        </v-row>
 
-          <span>Recent</span>
-        </v-btn>
+        <!-- 歌单推荐组件 -->
+        <PlaylistSection 
+          :playlists="playlists"
+          @playlist-click="handlePlaylistClick"
+          @more-click="handleMoreClick"
+        />
 
-        <v-btn value="favorites">
-          <v-icon>mdi-heart</v-icon>
+        <!-- 当前播放条组件 -->
+        <CurrentPlayingBar 
+          :current-song="currentSong"
+          @toggle-play="handleCurrentPlayToggle"
+          @show-playlist="handleShowPlaylist"
+        />
+      </v-container>
+    </v-main>
 
-          <span>Favorites</span>
-        </v-btn>
-
-        <v-btn value="nearby">
-          <v-icon>mdi-map-marker</v-icon>
-
-          <span>Nearby</span>
-        </v-btn>
-      </v-bottom-navigation>
-    </v-container>
+    <!-- 底部导航组件 -->
+    <BottomNavigation 
+      v-model="activeTab"
+      @tab-change="handleTabChange"
+    />
   </v-app>
-
-
 </template>
 
 <style scoped>
-.logo.vite:hover {
-  filter: drop-shadow(0 0 2em #747bff);
+.music-app {
+  background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+  min-height: 100vh;
 }
 
-.logo.vue:hover {
-  filter: drop-shadow(0 0 2em #249b73);
-}
-</style>
-<style>
-:root {
-  font-family: Inter, Avenir, Helvetica, Arial, sans-serif;
-  font-size: 16px;
-  line-height: 24px;
-  font-weight: 400;
-
-  color: #0f0f0f;
-  background-color: #f6f6f6;
-
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  -webkit-text-size-adjust: 100%;
+.main-content {
+  padding-bottom: 100px !important;
 }
 
-.container {
-  margin: 0;
-  padding-top: 10vh;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  text-align: center;
-}
-
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: 0.75s;
-}
-
-.logo.tauri:hover {
-  filter: drop-shadow(0 0 2em #24c8db);
-}
-
-.row {
-  display: flex;
-  justify-content: center;
-}
-
-a {
-  font-weight: 500;
-  color: #646cff;
-  text-decoration: inherit;
-}
-
-a:hover {
-  color: #535bf2;
-}
-
-h1 {
-  text-align: center;
-}
-
-input,
-button {
-  border-radius: 8px;
-  border: 1px solid transparent;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
-  font-weight: 500;
-  font-family: inherit;
-  color: #0f0f0f;
-  background-color: #ffffff;
-  transition: border-color 0.25s;
-  box-shadow: 0 2px 2px rgba(0, 0, 0, 0.2);
-}
-
-button {
-  cursor: pointer;
-}
-
-button:hover {
-  border-color: #396cd8;
-}
-
-button:active {
-  border-color: #396cd8;
-  background-color: #e8e8e8;
-}
-
-input,
-button {
-  outline: none;
-}
-
-#greet-input {
-  margin-right: 5px;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    color: #f6f6f6;
-    background-color: #2f2f2f;
-  }
-
-  a:hover {
-    color: #24c8db;
-  }
-
-  input,
-  button {
-    color: #ffffff;
-    background-color: #0f0f0f98;
-  }
-
-  button:active {
-    background-color: #0f0f0f69;
-  }
+.page-title h1 {
+  color: white;
 }
 </style>

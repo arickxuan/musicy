@@ -8,12 +8,30 @@ export {}
 /* prettier-ignore */
 declare module 'vue' {
   export interface GlobalComponents {
+    ActionCard: typeof import('./src/components/ActionCard.vue')['default']
+    BottomNavigation: typeof import('./src/components/BottomNavigation.vue')['default']
+    CurrentPlayingBar: typeof import('./src/components/CurrentPlayingBar.vue')['default']
+    PlayerCard: typeof import('./src/components/PlayerCard.vue')['default']
+    PlaylistCard: typeof import('./src/components/PlaylistCard.vue')['default']
+    PlaylistSection: typeof import('./src/components/PlaylistSection.vue')['default']
+    QuickActions: typeof import('./src/components/QuickActions.vue')['default']
+    SearchField: typeof import('./src/components/SearchField.vue')['default']
+    StatusBar: typeof import('./src/components/StatusBar.vue')['default']
     VApp: typeof import('vuetify/components')['VApp']
+    VAvatar: typeof import('vuetify/components')['VAvatar']
     VBottomNavigation: typeof import('vuetify/components')['VBottomNavigation']
     VBtn: typeof import('vuetify/components')['VBtn']
+    VCard: typeof import('vuetify/components')['VCard']
+    VCardSubtitle: typeof import('vuetify/components')['VCardSubtitle']
+    VCardText: typeof import('vuetify/components')['VCardText']
     VCol: typeof import('vuetify/components')['VCol']
     VContainer: typeof import('vuetify/components')['VContainer']
+    VDivider: typeof import('vuetify/components')['VDivider']
     VIcon: typeof import('vuetify/components')['VIcon']
+    VImg: typeof import('vuetify/components')['VImg']
+    VMain: typeof import('vuetify/components')['VMain']
     VRow: typeof import('vuetify/components')['VRow']
+    VSpacer: typeof import('vuetify/components')['VSpacer']
+    VTextField: typeof import('vuetify/components')['VTextField']
   }
 }
