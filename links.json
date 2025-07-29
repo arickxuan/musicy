@@ -1,0 +1,5 @@
+{
+    "css": [
+        "https://cdn.jsdelivr.net/npm/vuetify@3.9.2/dist/vuetify-labs.css"
+    ]
+}
