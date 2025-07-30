@@ -11,6 +11,7 @@
       class="search-input"
       @keyup.enter="handleSearch"
       @click:clear="handleClear"
+      @click="handleClick"
     />
   </div>
 </template>
@@ -18,7 +19,7 @@
 <script setup>
 import { ref } from 'vue'
 
-const emit = defineEmits(['search', 'clear'])
+const emit = defineEmits(['search', 'clear', 'click'])
 
 const searchQuery = ref('')
 
@@ -31,6 +32,10 @@ const handleSearch = () => {
 const handleClear = () => {
   searchQuery.value = ''
   emit('clear')
+}
+
+const handleClick = () => {
+  emit('click')
 }
 </script>
 

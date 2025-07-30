@@ -1,5 +1,6 @@
 <script setup>
 import { ref } from 'vue';
+import { useRouter } from 'vue-router';
 import StatusBar from './components/StatusBar.vue';
 import SearchField from './components/SearchField.vue';
 import PlayerCard from './components/PlayerCard.vue';
@@ -11,6 +12,8 @@ import BottomNavigation from './components/BottomNavigation.vue';
 import {getList} from './core/import_qq';
 
 import { onMounted } from 'vue'
+
+const router = useRouter();
 
 onMounted(async () => {
   console.log(`the component is now mounted.`)
@@ -57,6 +60,13 @@ const activeTab = ref('home');
 // 事件处理函数
 const handleSearch = (query) => {
   console.log('搜索:', query);
+  // 跳转到搜索页面
+  router.push('/search');
+};
+
+const handleSearchClick = () => {
+  // 点击搜索框时跳转到搜索页面
+  router.push('/search');
 };
 
 const handleTogglePlay = (song) => {
@@ -105,6 +115,7 @@ const handleTabChange = (tab) => {
         <SearchField 
           class="mb-6"
           @search="handleSearch"
+          @click="handleSearchClick"
         />
 
         <!-- 主要内容区域 -->
