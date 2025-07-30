@@ -1,19 +1,21 @@
 <template>
-  <v-card 
-    class="action-card pa-3 text-center"
+  <v-card
+    class="action-card"
     color="rgba(255,255,255,0.05)"
     rounded="xl"
     @click="handleClick"
     hover
   >
-    <v-icon 
-      :color="action.color" 
-      size="24" 
-      class="mb-2"
-    >
-      {{ action.icon }}
-    </v-icon>
-    <div class="action-text">{{ action.text }}</div>
+    <div class="action-content">
+      <v-icon
+        :color="action.color"
+        size="24"
+        class="action-icon"
+      >
+        {{ action.icon }}
+      </v-icon>
+      <div class="action-text">{{ action.text }}</div>
+    </div>
   </v-card>
 </template>
 
@@ -23,22 +25,22 @@ const props = defineProps({
     type: Object,
     required: true
   }
-});
+})
 
-const emit = defineEmits(['click']);
+const emit = defineEmits(['click'])
 
 const handleClick = () => {
-  emit('click', props.action);
-};
+  emit('click', props.action)
+}
 </script>
 
 <style scoped>
 .action-card {
-  height: 80px;
   backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.1);
   cursor: pointer;
-  transition: all 0.3s;
+  transition: all 0.3s ease;
+  height: 80px;
 }
 
 .action-card:hover {
@@ -46,9 +48,49 @@ const handleClick = () => {
   border-color: rgba(255, 255, 255, 0.2);
 }
 
+.action-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  padding: 12px 8px;
+  gap: 8px;
+}
+
+.action-icon {
+  flex-shrink: 0;
+}
+
 .action-text {
   font-size: 12px;
-  color: white;
   font-weight: 500;
+  color: white;
+  text-align: center;
+  line-height: 1.2;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  width: 100%;
+}
+
+/* 响应式设计 */
+@media (max-width: 600px) {
+  .action-card {
+    height: 70px;
+  }
+  
+  .action-content {
+    padding: 8px 6px;
+    gap: 6px;
+  }
+  
+  .action-icon {
+    font-size: 20px !important;
+  }
+  
+  .action-text {
+    font-size: 11px;
+  }
 }
 </style>

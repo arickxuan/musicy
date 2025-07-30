@@ -1,40 +1,67 @@
 <template>
-  <v-text-field
-    v-model="searchQuery"
-    variant="solo"
-    :placeholder="placeholder"
-    prepend-inner-icon="mdi-magnify"
-    hide-details
-    class="search-field"
-    color="yellow"
-    bg-color="rgba(255,255,255,0.1)"
-    rounded="pill"
-    @input="handleSearch"
-  ></v-text-field>
+  <div class="search-field">
+    <v-text-field
+      v-model="searchQuery"
+      placeholder="搜索音乐、歌手、专辑"
+      variant="outlined"
+      color="primary"
+      prepend-inner-icon="mdi-magnify"
+      clearable
+      hide-details
+      class="search-input"
+      @keyup.enter="handleSearch"
+      @click:clear="handleClear"
+    />
+  </div>
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref } from 'vue'
 
-const props = defineProps({
-  placeholder: {
-    type: String,
-    default: '歌手/歌名/专辑/歌词'
-  }
-});
+const emit = defineEmits(['search', 'clear'])
 
-const emit = defineEmits(['search']);
-
-const searchQuery = ref('');
+const searchQuery = ref('')
 
 const handleSearch = () => {
-  emit('search', searchQuery.value);
-};
+  if (searchQuery.value.trim()) {
+    emit('search', searchQuery.value.trim())
+  }
+}
+
+const handleClear = () => {
+  searchQuery.value = ''
+  emit('clear')
+}
 </script>
 
 <style scoped>
 .search-field {
-  background: rgba(255, 255, 255, 0.1) !important;
-  backdrop-filter: blur(10px);
+  width: 100%;
+}
+
+.search-input :deep(.v-field) {
+  background-color: rgba(255, 255, 255, 0.05);
+  border-radius: 24px;
+}
+
+.search-input :deep(.v-field__outline) {
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.search-input :deep(.v-field__outline--focused) {
+  border-color: rgb(var(--v-theme-primary));
+}
+
+.search-input :deep(.v-field__input) {
+  color: white;
+  padding: 0 16px;
+}
+
+.search-input :deep(.v-field__input::placeholder) {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.search-input :deep(.v-field__prepend-inner) {
+  color: rgba(255, 255, 255, 0.6);
 }
 </style>

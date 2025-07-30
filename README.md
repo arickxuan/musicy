@@ -9,11 +9,13 @@ This template should help get you started developing with Tauri + Vue 3 in Vite.
 
 https://y.qq.com/musicmac/v6/playlist/detail.html?id=1839459328
 
-https://i.y.qq.com/n2/m/share/details/taoge.html?ADTAG=ryqq.playlist&id=1839459328
+https://i.y.qq.com/n2/m/share/details/taoge.html?ADTAG=ryqq.playlist&id=9078754506
+
+2014519842
 
 
 ```
-fetch("https://c.y.qq.com/v8/fcg-bin/fcg_v8_playlist_cp.fcg?newsong=1&id=1839459328&format=json&inCharset=GB2312&outCharset=utf-8").then(data => data.json()).then(data => {
+fetch("https://c.y.qq.com/v8/fcg-bin/fcg_v8_playlist_cp.fcg?newsong=1&id=2014519842&format=json&inCharset=GB2312&outCharset=utf-8").then(data => data.json()).then(data => {
     console.log(Array.from(data.data.cdlist).flatMap(u => u.songlist).map(m => m.name + " - " + Array.from(m.singer).map(c => c.name).reduce((s1, s2) => s1 + "," + s2)).reduce((s1, s2) => s1 + '\n' + s2))
 })
 

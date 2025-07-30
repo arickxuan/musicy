@@ -1,70 +1,167 @@
 <template>
-  <v-bottom-navigation 
-    v-model="activeTab"
-    class="bottom-nav"
-    color="rgba(255,255,255,0.05)"
-    height="80"
-    @update:model-value="handleTabChange"
-  >
-    <v-btn 
-      v-for="(item, index) in navItems" 
-      :key="index"
-      :value="item.value" 
-      class="nav-btn"
+  <div class="bottom-navigation">
+    <v-bottom-navigation
+      v-model="activeTab"
+      color="primary"
+      grow
+      class="navigation-bar"
     >
-      <v-icon>{{ item.icon }}</v-icon>
-      <span>{{ item.text }}</span>
-    </v-btn>
-  </v-bottom-navigation>
+      <v-btn
+        v-for="tab in navigationTabs"
+        :key="tab.value"
+        :value="tab.value"
+        @click="handleTabClick(tab)"
+        class="nav-btn"
+      >
+        <v-icon size="24">{{ tab.icon }}</v-icon>
+        <span class="nav-label">{{ tab.label }}</span>
+      </v-btn>
+    </v-bottom-navigation>
+  </div>
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, watch } from 'vue'
+import { useRouter } from 'vue-router'
+
+const router = useRouter()
 
 const props = defineProps({
   modelValue: {
     type: String,
     default: 'home'
   }
-});
+})
 
-const emit = defineEmits(['update:modelValue', 'tab-change']);
+const emit = defineEmits(['update:modelValue', 'tab-change'])
 
-const activeTab = ref(props.modelValue);
+const activeTab = ref(props.modelValue)
 
-const navItems = [
-  { value: 'home', icon: 'mdi-home', text: '首页' },
-  { value: 'search', icon: 'mdi-magnify', text: '搜索' },
-  { value: 'library', icon: 'mdi-music-note', text: '音乐库' },
-  { value: 'download', icon: 'mdi-download', text: '下载' },
-  { value: 'profile', icon: 'mdi-account', text: '我的' }
-];
+// 导航标签配置
+const navigationTabs = ref([
+  {
+    value: 'home',
+    label: '首页',
+    icon: 'mdi-home',
+    route: '/'
+  },
+  {
+    value: 'search',
+    label: '搜索',
+    icon: 'mdi-magnify',
+    route: '/search'
+  },
+  {
+    value: 'music',
+    label: '音乐',
+    icon: 'mdi-music-note',
+    route: '/music'
+  },
+  {
+    value: 'download',
+    label: '下载',
+    icon: 'mdi-download',
+    route: '/download'
+  },
+  {
+    value: 'profile',
+    label: '我的',
+    icon: 'mdi-account',
+    route: '/my'
+  }
+])
 
-const handleTabChange = (value) => {
-  emit('update:modelValue', value);
-  emit('tab-change', value);
-};
+// 监听props变化
+watch(() => props.modelValue, (newVal) => {
+  activeTab.value = newVal
+})
+
+// 监听activeTab变化
+watch(activeTab, (newVal) => {
+  emit('update:modelValue', newVal)
+  emit('tab-change', newVal)
+})
+
+const handleTabClick = (tab) => {
+  console.log('导航标签点击:', tab.label)
+  
+  // 如果有路由配置，进行路由跳转
+  if (tab.route && tab.route !== router.currentRoute.value.path) {
+    router.push(tab.route).catch(err => {
+      // 忽略重复导航错误
+      if (err.name !== 'NavigationDuplicated') {
+        console.error('路由跳转失败:', err)
+      }
+    })
+  }
+}
 </script>
 
 <style scoped>
-.bottom-nav {
-  background: rgba(0, 0, 0, 0.8) !important;
+.bottom-navigation {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+}
+
+.navigation-bar {
+  background: rgba(26, 26, 26, 0.95) !important;
   backdrop-filter: blur(10px);
   border-top: 1px solid rgba(255, 255, 255, 0.1);
+  height: 80px !important;
 }
 
 .nav-btn {
   flex-direction: column !important;
   height: 100% !important;
-  color: rgba(255, 255, 255, 0.7) !important;
+  min-width: 0 !important;
+  padding: 8px 4px !important;
 }
 
-.nav-btn span {
-  font-size: 10px;
+.nav-label {
+  font-size: 0.75rem;
   margin-top: 4px;
+  line-height: 1;
+  color: rgba(255, 255, 255, 0.7);
+  transition: color 0.2s ease;
 }
 
-.nav-btn.v-btn--active {
-  color: #FFD700 !important;
+/* 激活状态样式 */
+.v-btn--active .nav-label {
+  color: rgb(var(--v-theme-primary));
+}
+
+.v-btn--active .v-icon {
+  color: rgb(var(--v-theme-primary)) !important;
+}
+
+/* 悬停效果 */
+.nav-btn:hover .nav-label {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.nav-btn:hover .v-icon {
+  color: rgba(255, 255, 255, 0.9) !important;
+}
+
+/* 响应式设计 */
+@media (max-width: 600px) {
+  .navigation-bar {
+    height: 70px !important;
+  }
+  
+  .nav-btn {
+    padding: 6px 2px !important;
+  }
+  
+  .nav-label {
+    font-size: 0.7rem;
+  }
+  
+  .v-icon {
+    font-size: 20px !important;
+  }
 }
 </style>
