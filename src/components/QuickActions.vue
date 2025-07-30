@@ -50,7 +50,6 @@ const emit = defineEmits(['action-click']);
 const handleAction = (action) => {
   if (action.text == "歌单导入"){
     // this.$router.push('/import-music-list')
-    console.log(route.path)
     router.push({ path: '/import-music-list' })
     return
   }

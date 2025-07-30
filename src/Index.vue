@@ -92,7 +92,7 @@ const handleTabChange = (tab) => {
 <template>
   <v-app theme="dark" class="music-app">
     <!-- 状态栏组件 -->
-    <StatusBar />
+    <!-- <StatusBar /> -->
 
     <v-main class="main-content">
       <v-container fluid class="pa-4">

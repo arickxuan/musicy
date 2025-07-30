@@ -19,17 +19,29 @@
   </v-card>
   <div id="vs"></div>
   <canvas ref="analyzerCanvas"></canvas>
+
+  <!-- 播放队列 -->
+  <PlaylistQueue
+    :visible="showPlaylistQueue"
+    :playlist="samplePlaylist"
+    :current-index="currentSongIndex"
+    @close="handleQueueClose"
+    @song-click="handleSongClick"
+    @song-more="handleSongMore"
+    @shuffle-toggle="handleShuffleToggle"
+  />
 </template>
 
 <script setup>
 
-import { ref,onMounted } from 'vue';
+import { ref, onMounted } from 'vue';
 import { HeadlessAudioPlayer } from '../core/player';
 import Player from 'xgplayer';
 import 'xgplayer/dist/index.min.css'
 // 现在music作为一个固定的preset使用，不再继承player, 解决耦合性过大问题
 import MusicPreset, { Analyze } from 'xgplayer-music';
 import 'xgplayer-music/dist/index.min.css'
+import PlaylistQueue from './PlaylistQueue.vue'
 
 // 创建canvas的引用
 const canvasRef = ref(null)
@@ -87,18 +99,105 @@ const props = defineProps({
 
 const emit = defineEmits(['toggle-play', 'show-playlist']);
 
+// 播放队列状态
+const showPlaylistQueue = ref(false)
+const currentSongIndex = ref(0)
+
+// 示例播放列表数据
+const samplePlaylist = ref([
+  {
+    id: '1',
+    title: '等你下课',
+    artist: '周杰伦',
+    cover: 'https://picsum.photos/seed/song1/200/200',
+    isPlaying: true
+  },
+  {
+    id: '2',
+    title: '远走高飞',
+    artist: '金志文',
+    cover: 'https://picsum.photos/seed/song2/200/200',
+    isPlaying: false
+  },
+  {
+    id: '3',
+    title: '答案',
+    artist: '杨坤 郭采洁',
+    cover: 'https://picsum.photos/seed/song3/200/200',
+    isPlaying: false
+  },
+  {
+    id: '4',
+    title: '陷阱',
+    artist: '王北车',
+    cover: 'https://picsum.photos/seed/song4/200/200',
+    isPlaying: false
+  },
+  {
+    id: '5',
+    title: '说散就散',
+    artist: '袁娅维TIA RAY',
+    cover: 'https://picsum.photos/seed/song5/200/200',
+    isPlaying: false
+  },
+  {
+    id: '6',
+    title: '讲真的',
+    artist: '刘宇宁',
+    cover: 'https://picsum.photos/seed/song6/200/200',
+    isPlaying: false
+  },
+  {
+    id: '7',
+    title: '像我这样的人',
+    artist: '毛不易',
+    cover: 'https://picsum.photos/seed/song7/200/200',
+    isPlaying: false
+  },
+  {
+    id: '8',
+    title: '病变',
+    artist: 'CUBI',
+    cover: 'https://picsum.photos/seed/song8/200/200',
+    isPlaying: false
+  }
+])
+
 const togglePlay = () => {
   player.play();
   emit('toggle-play');
-
-  
-
 };
 
 const showPlaylist = () => {
-  player.pause();
+  showPlaylistQueue.value = true
   emit('show-playlist');
 };
+
+const handleQueueClose = () => {
+  showPlaylistQueue.value = false
+}
+
+const handleSongClick = (song, index) => {
+  console.log('播放队列歌曲点击:', song.title, index)
+  // 更新当前播放索引
+  currentSongIndex.value = index
+  // 更新播放列表中的播放状态
+  samplePlaylist.value.forEach((item, i) => {
+    item.isPlaying = i === index
+  })
+  // 切换到选中的歌曲
+  emit('toggle-play')
+}
+
+const handleSongMore = (song, index) => {
+  console.log('歌曲更多操作:', song.title, index)
+  // 显示歌曲操作菜单
+}
+
+const handleShuffleToggle = (isShuffled) => {
+  console.log('随机播放切换:', isShuffled)
+  // 切换播放模式
+}
 </script>
 
 <style scoped>

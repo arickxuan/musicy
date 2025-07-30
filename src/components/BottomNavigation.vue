@@ -51,12 +51,12 @@ const navigationTabs = ref([
     icon: 'mdi-magnify',
     route: '/search'
   },
-  {
-    value: 'music',
-    label: '音乐',
-    icon: 'mdi-music-note',
-    route: '/music'
-  },
+  // {
+  //   value: 'music',
+  //   label: '音乐',
+  //   icon: 'mdi-music-note',
+  //   route: '/music'
+  // },
   {
     value: 'download',
     label: '下载',
