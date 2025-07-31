@@ -5,6 +5,7 @@ import ImportMusicListView from '../view/ImportMusicListView.vue'
 import My from '../view/My.vue'
 import Search from '../view/Search.vue'
 import Lyrics from '../view/Lyrics.vue'
+import Settings from '../view/Settings.vue'
 import PlaylistTest from '../view/PlaylistTest.vue'
 import NotFound from '../view/NotFound.vue'
 
@@ -14,6 +15,7 @@ const routes = [
     { path: '/my', component: My },
     { path: '/search', component: Search },
     { path: '/lyrics', component: Lyrics },
+    { path: '/settings', component: Settings },
     { path: '/playlist-test', component: PlaylistTest },
     { path: '/:pathMatch(.*)*', name: 'NotFound', component: NotFound },
 ]

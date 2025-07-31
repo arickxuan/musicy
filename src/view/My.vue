@@ -8,7 +8,7 @@
                     <v-btn icon size="small" variant="text" color="white">
                         <v-icon>mdi-share-variant</v-icon>
                     </v-btn>
-                    <v-btn icon size="small" variant="text" color="white">
+                    <v-btn icon size="small" variant="text" color="white" @click="handleSettingsClick">
                         <v-icon>mdi-cog</v-icon>
                     </v-btn>
                 </div>
@@ -213,6 +213,11 @@ const handleShowPlaylist = () => {
 const handleTabChange = (tab) => {
     console.log('切换标签:', tab)
     activeTab.value = tab
+}
+
+const handleSettingsClick = () => {
+    console.log('打开设置页面')
+    router.push('/settings')
 }
 </script>
 

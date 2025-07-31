@@ -11,6 +11,7 @@ declare module 'vue' {
     ActionCard: typeof import('./src/components/ActionCard.vue')['default']
     BottomNavigation: typeof import('./src/components/BottomNavigation.vue')['default']
     CurrentPlayingBar: typeof import('./src/components/CurrentPlayingBar.vue')['default']
+    EqualizerDialog: typeof import('./src/components/EqualizerDialog.vue')['default']
     ImportDialog: typeof import('./src/components/ImportDialog.vue')['default']
     PageHeader: typeof import('./src/components/PageHeader.vue')['default']
     PlayerCard: typeof import('./src/components/PlayerCard.vue')['default']
@@ -49,7 +50,10 @@ declare module 'vue' {
     VProgressCircular: typeof import('vuetify/components')['VProgressCircular']
     VProgressLinear: typeof import('vuetify/components')['VProgressLinear']
     VRow: typeof import('vuetify/components')['VRow']
+    VSelect: typeof import('vuetify/components')['VSelect']
+    VSlider: typeof import('vuetify/components')['VSlider']
     VSpacer: typeof import('vuetify/components')['VSpacer']
+    VSwitch: typeof import('vuetify/components')['VSwitch']
     VTextField: typeof import('vuetify/components')['VTextField']
   }
 }
