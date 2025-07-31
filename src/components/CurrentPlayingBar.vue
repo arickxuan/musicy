@@ -1,17 +1,19 @@
 <template>
   <v-card class="current-playing-bar" color="rgba(255,255,255,0.1)" rounded="xl">
     <div class="playing-content">
-      <v-avatar size="40" class="mr-3">
-        <v-img :src="currentSong.cover"></v-img>
-      </v-avatar>
-      <div class="playing-info">
-        <div class="playing-title">{{ currentSong.artist }}</div>
+      <div class="playing-main" @click="goToLyrics">
+        <v-avatar size="40" class="mr-3">
+          <v-img :src="currentSong.cover"></v-img>
+        </v-avatar>
+        <div class="playing-info">
+          <div class="playing-title">{{ currentSong.artist }}</div>
+        </div>
       </div>
       <div class="playing-controls">
-        <v-btn icon size="small" color="yellow" @click="togglePlay">
+        <v-btn icon size="small" color="yellow" @click.stop="togglePlay">
           <v-icon>{{ currentSong.isPlaying ? 'mdi-pause' : 'mdi-play' }}</v-icon>
         </v-btn>
-        <v-btn icon size="small" class="ml-2" @click="showPlaylist">
+        <v-btn icon size="small" class="ml-2" @click.stop="showPlaylist">
           <v-icon>mdi-format-list-bulleted</v-icon>
         </v-btn>
       </div>
@@ -35,6 +37,7 @@
 <script setup>
 
 import { ref, onMounted } from 'vue';
+import { useRouter } from 'vue-router';
 import { HeadlessAudioPlayer } from '../core/player';
 import Player from 'xgplayer';
 import 'xgplayer/dist/index.min.css'
@@ -42,6 +45,8 @@ import 'xgplayer/dist/index.min.css'
 import MusicPreset, { Analyze } from 'xgplayer-music';
 import 'xgplayer-music/dist/index.min.css'
 import PlaylistQueue from './PlaylistQueue.vue'
+
+const router = useRouter();
 
 // 创建canvas的引用
 const canvasRef = ref(null)
@@ -198,6 +203,11 @@ const handleShuffleToggle = (isShuffled) => {
   console.log('随机播放切换:', isShuffled)
   // 切换播放模式
 }
+
+const goToLyrics = () => {
+  console.log('跳转到歌词页面')
+  router.push('/lyrics')
+}
 </script>
 
 <style scoped>
@@ -215,6 +225,19 @@ const handleShuffleToggle = (isShuffled) => {
   display: flex;
   align-items: center;
   padding: 8px 16px;
+}
+
+.playing-main {
+  display: flex;
+  align-items: center;
+  flex: 1;
+  cursor: pointer;
+  border-radius: 8px;
+  transition: background-color 0.2s ease;
+}
+
+.playing-main:hover {
+  background-color: rgba(255, 255, 255, 0.05);
 }
 
 .playing-info {
