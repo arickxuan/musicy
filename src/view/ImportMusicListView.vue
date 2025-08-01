@@ -94,14 +94,26 @@ onMounted(() => {
         onError}) => {
         console.log(`action 变化: ${name} `)
         console.log("store", store, "args", args)
+        if (args[0].id != undefined && args[0].name != undefined){
+            playlistActions.value.push({
+                id: `playlist-${args[0].id}`,
+                title: `${args[0].name}`,
+                icon: 'mdi-playlist-edit',
+                iconBg: '#3d3d3d',
+                description: `用户手动创建的歌单`
+            })
+        }
 
-        playlistActions.value.push({
-            id: `playlist-${args[0].id}`,
-            title: `编辑 ${args[0].name}`,
-            icon: 'mdi-playlist-edit',
-            iconBg: '#3d3d3d',
-            description: `修改歌单 ${args[0].name}`
-        })
+        if (args[0].songListId != undefined && args[0].songListName != undefined) {
+            playlistActions.value.push({
+                id: `playlist-${args[0].songListId}`,
+                title: `${args[0].songListName}`,
+                icon: 'mdi-playlist-edit',
+                iconBg: '#3d3d3d',
+                description: `从qq导入的歌单`
+            })
+        }
+        
 
     })
 })

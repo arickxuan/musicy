@@ -40,6 +40,7 @@ declare module 'vue' {
     VContainer: typeof import('vuetify/components')['VContainer']
     VDialog: typeof import('vuetify/components')['VDialog']
     VDivider: typeof import('vuetify/components')['VDivider']
+    VFileInput: typeof import('vuetify/components')['VFileInput']
     VIcon: typeof import('vuetify/components')['VIcon']
     VImg: typeof import('vuetify/components')['VImg']
     VList: typeof import('vuetify/components')['VList']

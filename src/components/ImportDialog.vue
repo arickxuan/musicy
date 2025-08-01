@@ -1,10 +1,5 @@
 <template>
-  <v-dialog
-    v-model="dialogVisible"
-    max-width="500"
-    persistent
-    class="import-dialog"
-  >
+  <v-dialog v-model="dialogVisible" max-width="500" persistent class="import-dialog">
     <v-card class="import-dialog-card" color="surface">
       <!-- 对话框头部 -->
       <v-card-title class="dialog-header">
@@ -12,14 +7,7 @@
           <h3 class="text-h6 font-weight-medium text-white">
             {{ getDialogTitle() }}
           </h3>
-          <v-btn
-            icon
-            size="small"
-            variant="text"
-            color="white"
-            @click="handleClose"
-            :disabled="isImporting"
-          >
+          <v-btn icon size="small" variant="text" color="white" @click="handleClose" :disabled="isImporting">
             <v-icon>mdi-close</v-icon>
           </v-btn>
         </div>
@@ -32,23 +20,13 @@
         <!-- 导入源选择 -->
         <div v-if="currentStep === 'source'" class="source-selection">
           <p class="text-body-1 text-white mb-4">选择导入来源：</p>
-          
+
           <div class="import-sources">
-            <v-card
-              v-for="source in importSources"
-              :key="source.id"
-              class="source-card"
-              :class="{ 'selected': selectedSource?.id === source.id }"
-              color="rgba(255,255,255,0.05)"
-              @click="selectSource(source)"
-              hover
-            >
+            <v-card v-for="source in importSources" :key="source.id" class="source-card"
+              :class="{ 'selected': selectedSource?.id === source.id }" color="rgba(255,255,255,0.05)"
+              @click="selectSource(source)" hover>
               <v-card-text class="source-content">
-                <v-icon
-                  :color="selectedSource?.id === source.id ? 'primary' : 'white'"
-                  size="24"
-                  class="mb-2"
-                >
+                <v-icon :color="selectedSource?.id === source.id ? 'primary' : 'white'" size="24" class="mb-2">
                   {{ source.icon }}
                 </v-icon>
                 <div class="source-name">{{ source.name }}</div>
@@ -61,44 +39,26 @@
         <div v-if="currentStep === 'config'" class="import-config">
           <div v-if="selectedSource?.id === 'url'">
             <p class="text-body-1 text-white mb-4">请输入歌单链接：</p>
-            <v-text-field
-              v-model="importUrl"
-              label="歌单链接"
-              placeholder="https://..."
-              variant="outlined"
-              color="primary"
-              :error-messages="urlError"
-              :disabled="isImporting"
-              class="mb-4"
-            />
+            <v-text-field v-model="importUrl" label="歌单链接" placeholder="https://..." variant="outlined" color="primary"
+              :error-messages="urlError" :disabled="isImporting" class="mb-4" />
+          </div>
+
+          <div v-if="selectedSource?.id === 'file'">
+            <p class="text-body-1 text-white mb-4">请选择文件</p>
+            <v-file-input v-model="importFile" label="选择文件" @change="handleFileChange" variant="outlined" color="primary"
+              :error-messages="fileError" :disabled="isImporting" class="mb-4" />
           </div>
 
           <div v-if="selectedSource?.id === 'qq'">
             <p class="text-body-1 text-white mb-4">请输入QQ音乐歌单ID：</p>
-            <v-text-field
-              v-model="playlistId"
-              label="歌单ID"
-              placeholder="例如：1839459328"
-              variant="outlined"
-              color="primary"
-              :error-messages="idError"
-              :disabled="isImporting"
-              class="mb-4"
-            />
+            <v-text-field v-model="playlistId" label="歌单ID" placeholder="例如：1839459328" variant="outlined"
+              color="primary" :error-messages="idError" :disabled="isImporting" class="mb-4" />
           </div>
 
           <div v-if="selectedSource?.id === 'netease'">
             <p class="text-body-1 text-white mb-4">请输入网易云音乐歌单ID：</p>
-            <v-text-field
-              v-model="playlistId"
-              label="歌单ID"
-              placeholder="例如：123456789"
-              variant="outlined"
-              color="primary"
-              :error-messages="idError"
-              :disabled="isImporting"
-              class="mb-4"
-            />
+            <v-text-field v-model="playlistId" label="歌单ID" placeholder="例如：123456789" variant="outlined"
+              color="primary" :error-messages="idError" :disabled="isImporting" class="mb-4" />
           </div>
         </div>
 
@@ -111,15 +71,9 @@
             <p class="text-h6 text-white mb-2">正在导入歌单...</p>
             <p class="text-body-2 text-grey mb-4">{{ progressText }}</p>
           </div>
-          
-          <v-progress-linear
-            v-model="importProgress"
-            color="primary"
-            height="8"
-            rounded
-            class="mb-4"
-          />
-          
+
+          <v-progress-linear v-model="importProgress" color="primary" height="8" rounded class="mb-4" />
+
           <p class="text-caption text-grey text-center">
             {{ Math.round(importProgress) }}%
           </p>
@@ -128,18 +82,14 @@
         <!-- 导入结果 -->
         <div v-if="currentStep === 'result'" class="import-result">
           <div class="result-info" :class="{ 'success': importResult?.success, 'error': !importResult?.success }">
-            <v-icon
-              :color="importResult?.success ? 'success' : 'error'"
-              size="48"
-              class="mb-4"
-            >
+            <v-icon :color="importResult?.success ? 'success' : 'error'" size="48" class="mb-4">
               {{ importResult?.success ? 'mdi-check-circle' : 'mdi-alert-circle' }}
             </v-icon>
-            
+
             <h4 class="text-h6 text-white mb-2">
               {{ importResult?.success ? '导入成功' : '导入失败' }}
             </h4>
-            
+
             <div v-if="importResult?.success" class="success-details">
               <p class="text-body-2 text-grey mb-2">
                 成功导入 {{ importResult.importedSongs }} / {{ importResult.totalSongs }} 首歌曲
@@ -148,7 +98,7 @@
                 歌单名称：{{ importResult.playlist?.name }}
               </p>
             </div>
-            
+
             <div v-if="!importResult?.success" class="error-details">
               <p class="text-body-2 text-error mb-2">
                 {{ importResult?.errors?.[0] || '导入过程中发生未知错误' }}
@@ -161,51 +111,26 @@
       <!-- 对话框操作按钮 -->
       <v-card-actions class="dialog-actions">
         <v-spacer></v-spacer>
-        
-        <v-btn
-          v-if="currentStep === 'source'"
-          variant="text"
-          color="white"
-          @click="handleClose"
-          :disabled="isImporting"
-        >
+
+        <v-btn v-if="currentStep === 'source'" variant="text" color="white" @click="handleClose"
+          :disabled="isImporting">
           取消
         </v-btn>
-        
-        <v-btn
-          v-if="currentStep === 'source'"
-          color="primary"
-          @click="nextStep"
-          :disabled="!selectedSource"
-        >
+
+        <v-btn v-if="currentStep === 'source'" color="primary" @click="nextStep" :disabled="!selectedSource">
           下一步
         </v-btn>
 
-        <v-btn
-          v-if="currentStep === 'config'"
-          variant="text"
-          color="white"
-          @click="prevStep"
-          :disabled="isImporting"
-        >
+        <v-btn v-if="currentStep === 'config'" variant="text" color="white" @click="prevStep" :disabled="isImporting">
           上一步
         </v-btn>
-        
-        <v-btn
-          v-if="currentStep === 'config'"
-          color="primary"
-          @click="startImport"
-          :disabled="!canStartImport || isImporting"
-          :loading="isImporting"
-        >
+
+        <v-btn v-if="currentStep === 'config'" color="primary" @click="startImport"
+          :disabled="!canStartImport || isImporting" :loading="isImporting">
           开始导入
         </v-btn>
 
-        <v-btn
-          v-if="currentStep === 'result'"
-          color="primary"
-          @click="handleClose"
-        >
+        <v-btn v-if="currentStep === 'result'" color="primary" @click="handleClose">
           完成
         </v-btn>
       </v-card-actions>
@@ -235,6 +160,7 @@ const dialogVisible = ref(false)
 const currentStep = ref('source') // 'source', 'config', 'importing', 'result'
 const selectedSource = ref(null)
 const importUrl = ref('')
+const importFile = ref(null)
 const playlistId = ref('')
 const isImporting = ref(false)
 const importProgress = ref(0)
@@ -247,7 +173,8 @@ const idError = ref('')
 const importSources = ref([
   { id: 'qq', name: 'QQ音乐', icon: 'mdi-music-note' },
   { id: 'netease', name: '网易云音乐', icon: 'mdi-music-circle' },
-  { id: 'url', name: '链接导入', icon: 'mdi-link' }
+  { id: 'url', name: '链接导入', icon: 'mdi-link' },
+  { id: 'file', name: '本地文件', icon: 'mdi-file' }
 ])
 
 // 计算属性
@@ -311,6 +238,18 @@ const prevStep = () => {
     currentStep.value = 'source'
   }
 }
+const handleFileChange = (event) => {
+  importFile.value = event.target.files[0];
+
+  // 直接读取文件示例
+  if (importFile.value) {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      console.log('Base64内容:', e.target.result); // 如果是图片/二进制
+    };
+    reader.readAsDataURL(importFile.value);
+  }
+}
 
 const startImport = async () => {
   if (!canStartImport.value) return
@@ -321,24 +260,29 @@ const startImport = async () => {
   progressText.value = '准备导入...'
 
   try {
-    // 模拟导入过程
-    let re = await doImport()
-    
-    // 导入成功
-    importResult.value = {
-      success: true,
-      totalSongs: re.songlist.length,
-      importedSongs: re.songlist.length,
-      failedSongs: 0,
-      errors: [],
-      playlist: {
-        name: '导入的歌单',
-        id: Date.now().toString()
+    if (selectedSource?.id === 'qq') {
+      let re = await doImport()
+
+      // 导入成功
+      importResult.value = {
+        success: true,
+        totalSongs: re.songlist.length,
+        importedSongs: re.songlist.length,
+        failedSongs: 0,
+        errors: [],
+        playlist: {
+          name: '导入的歌单',
+          id: Date.now().toString()
+        }
       }
+
+      currentStep.value = 'result'
+      canStartImport.value = true
+      emit('import-complete', importResult.value)
     }
-    
-    currentStep.value = 'result'
-    emit('import-complete', importResult.value)
+    if (selectedSource?.id === 'file') {
+
+    }
   } catch (error) {
     // 导入失败
     importResult.value = {
@@ -370,9 +314,9 @@ const simulateImport = () => {
 }
 
 const doImport = async () => {
-  let re = await getList(playlistId.value,true)
+  let re = await getList(playlistId.value, true)
   StorageUtil.setLocal(re.songListId, re);
-  
+
   const store = useSongListStore()
   const { addItem, list } = store //storeToRefs(store)
   // Add(re)
@@ -513,7 +457,7 @@ const handleClose = () => {
   .import-sources {
     grid-template-columns: 1fr;
   }
-  
+
   .dialog-content {
     padding: 16px;
   }
