@@ -247,7 +247,9 @@ const handleFileChange = (event) => {
     reader.onload = (e) => {
       console.log('Base64内容:', e.target.result); // 如果是图片/二进制
     };
-    reader.readAsDataURL(importFile.value);
+    reader.readAsText(importFile.value);
+    // reader.readAsText(this.selectedFile); // 根据需求改用 readAsDataURL/readAsArrayBuffer
+
   }
 }
 
