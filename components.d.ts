@@ -10,6 +10,7 @@ declare module 'vue' {
   export interface GlobalComponents {
     ActionCard: typeof import('./src/components/ActionCard.vue')['default']
     BottomNavigation: typeof import('./src/components/BottomNavigation.vue')['default']
+    CreatePlaylistDialog: typeof import('./src/components/CreatePlaylistDialog.vue')['default']
     CurrentPlayingBar: typeof import('./src/components/CurrentPlayingBar.vue')['default']
     EqualizerDialog: typeof import('./src/components/EqualizerDialog.vue')['default']
     ImportDialog: typeof import('./src/components/ImportDialog.vue')['default']

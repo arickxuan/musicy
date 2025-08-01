@@ -1,0 +1,25 @@
+{
+    "S3":[
+        {
+            "tag":"default",
+            "accessKey":"XXXX",
+            "secretKey":"XXXX",
+            "region":"XXXX",
+            "endpoint":"XXXX",
+            "bucket":"XXXX"
+        }
+    ],
+    "musicList":[
+        {
+            "tag":"default",
+            "url":"https://www.youtube.com/watch?v=XXXX"
+        }
+    ],
+    "configList":[
+        {
+            "tag":"default",
+            "url":"https://www.youtube.com/watch?v=XXXX"
+        }
+    ],
+    "proxy" : "https://cors.zme.ink/"
+}

@@ -20,15 +20,15 @@ fetch("https://c.y.qq.com/v8/fcg-bin/fcg_v8_playlist_cp.fcg?newsong=1&id=2014519
 })
 
 #昵称
-data.cdlist.nickname
+data.cdlist[0].nickname
 
 #哥单名
-data.cdlist.dissname
+data.cdlist[0].dissname
 
-data.cdlist.logo
+data.cdlist[0].logo
 
 #头像
-data.cdlist.headurl
+data.cdlist[0].headurl
 
 #歌单
 songlist[]

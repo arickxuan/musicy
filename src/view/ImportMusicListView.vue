@@ -16,20 +16,104 @@
 
         <!-- 导入对话框 -->
         <ImportDialog :visible="showImportDialog" @close="handleDialogClose" @import-complete="handleImportComplete" />
+
+        <!-- 新建歌单对话框 -->
+        <CreatePlaylistDialog :visible="showCreateDialog" :existing-playlists="existingPlaylists"
+            @close="handleCreateDialogClose" @create="handlePlaylistCreate" />
     </v-app>
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import PageHeader from '../components/PageHeader.vue'
 import PlaylistActionList from '../components/PlaylistActionList.vue'
 import ImportDialog from '../components/ImportDialog.vue'
+import CreatePlaylistDialog from '../components/CreatePlaylistDialog.vue'
+
+import { useSongListStore } from '../stores/list'
+import { storeToRefs } from 'pinia'
 
 const router = useRouter()
 
+const store = useSongListStore()
+
+const ount = () => {
+    // const store = useSongListStore()
+    const { Add, list } = storeToRefs(store)
+}
+
 // 对话框状态
 const showImportDialog = ref(false)
+const showCreateDialog = ref(false)
+
+// 现有歌单列表（用于重名检查）
+const existingPlaylists = ref([
+    { id: 'favorites', name: '我喜欢' },
+    { id: 'recent', name: '最近播放' }
+])
+
+    // 监控设置
+let unsubscribeStore
+let unsubscribeActionStore
+
+onMounted(() => {
+    // 监听 Pinia 的 playlists 变化
+    watch(
+        () => store.list,
+        (newPlaylists) => {
+            // 根据 Pinia 数据更新 playlistActions
+            playlistActions.value = [
+                ...playlistActions.value, // 保留原有操作
+                // 动态添加新操作（示例）
+                ...store.list.map(playlist => ({
+                    id: `playlist-${playlist.songListId}`,
+                    title: `编辑 ${playlist.songListName}`,
+                    icon: 'mdi-playlist-edit',
+                    iconBg: '#3d3d3d',
+                    description: `修改歌单 ${playlist.songListName}`
+                }))
+            ];
+            console.log(`watch 变化: ${playlistActions}`)
+        },
+        { deep: false } // 深度监听（如果需要）
+    );
+
+    // 使用 store 的 $subscribe 方法监控所有变化
+    unsubscribeStore = store.$subscribe((mutation, state) => {
+        console.log(`Store 变化: ${mutation.type} ${state.list }`)
+
+        // 详细的 mutation 信息
+        if (mutation.payload) {
+            console.log('Mutation payload:', mutation.payload)
+        }
+    })
+
+    unsubscribeActionStore = store.$onAction(({name, store, args, 
+        after, 
+        onError}) => {
+        console.log(`action 变化: ${name} `)
+        console.log("store", store, "args", args)
+
+        playlistActions.value.push({
+            id: `playlist-${args[0].id}`,
+            title: `编辑 ${args[0].name}`,
+            icon: 'mdi-playlist-edit',
+            iconBg: '#3d3d3d',
+            description: `修改歌单 ${args[0].name}`
+        })
+
+    })
+})
+
+// 组件卸载时清理
+onUnmounted(() => {
+    if (unsubscribeStore) {
+        unsubscribeStore()
+    }
+    unsubscribeActionStore()
+    console.log('组件即将卸载，停止监控')
+})
 
 // 歌单操作数据
 const playlistActions = ref([
@@ -74,8 +158,7 @@ const handleActionClick = (action) => {
             showImportDialog.value = true
             break
         case 'create':
-            // 后续实现新建歌单功能
-            console.log('新建歌单')
+            showCreateDialog.value = true
             break
         case 'favorites':
             // 后续实现我喜欢歌单功能
@@ -98,6 +181,24 @@ const handleDialogClose = () => {
 const handleImportComplete = (result) => {
     console.log('导入完成:', result)
     // 后续处理导入结果
+}
+
+const handleCreateDialogClose = () => {
+    showCreateDialog.value = false
+}
+
+const handlePlaylistCreate = (playlist) => {
+    console.log('歌单创建成功:', playlist)
+
+    // 添加到现有歌单列表
+    existingPlaylists.value.push(playlist)
+
+    // 这里可以添加保存到本地存储或发送到服务器的逻辑
+    // localStorage.setItem('playlists', JSON.stringify(existingPlaylists.value))
+
+    // 显示成功提示
+    // 可以使用 Vuetify 的 snackbar 或其他提示组件
+    console.log('新歌单已创建:', playlist.name)
 }
 </script>
 

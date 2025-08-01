@@ -215,6 +215,11 @@
 
 <script setup>
 import { ref, computed, watch } from 'vue'
+import { getList } from '../core/import_qq'
+import { StorageUtil } from '../core/localStorage'
+
+import { useSongListStore } from '../stores/list'
+import { storeToRefs } from 'pinia'
 
 const props = defineProps({
   visible: {
@@ -317,14 +322,14 @@ const startImport = async () => {
 
   try {
     // 模拟导入过程
-    await simulateImport()
+    let re = await doImport()
     
     // 导入成功
     importResult.value = {
       success: true,
-      totalSongs: 20,
-      importedSongs: 18,
-      failedSongs: 2,
+      totalSongs: re.songlist.length,
+      importedSongs: re.songlist.length,
+      failedSongs: 0,
       errors: [],
       playlist: {
         name: '导入的歌单',
@@ -362,6 +367,17 @@ const simulateImport = () => {
       }
     }, 200)
   })
+}
+
+const doImport = async () => {
+  let re = await getList(playlistId.value,true)
+  StorageUtil.setLocal(re.songListId, re);
+  
+  const store = useSongListStore()
+  const { addItem, list } = store //storeToRefs(store)
+  // Add(re)
+  addItem(re)
+  return re
 }
 
 const validateUrl = () => {
