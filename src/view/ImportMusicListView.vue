@@ -31,6 +31,7 @@ import PlaylistActionList from '../components/PlaylistActionList.vue'
 import ImportDialog from '../components/ImportDialog.vue'
 import CreatePlaylistDialog from '../components/CreatePlaylistDialog.vue'
 
+import { StorageUtil } from '../core/localStorage'
 import { useSongListStore } from '../stores/list'
 import { storeToRefs } from 'pinia'
 
@@ -53,35 +54,31 @@ const existingPlaylists = ref([
     { id: 'recent', name: '最近播放' }
 ])
 
-    // 监控设置
+// 监控设置
 let unsubscribeStore
 let unsubscribeActionStore
 
 onMounted(() => {
-    // 监听 Pinia 的 playlists 变化
-    watch(
-        () => store.list,
-        (newPlaylists) => {
-            // 根据 Pinia 数据更新 playlistActions
-            playlistActions.value = [
-                ...playlistActions.value, // 保留原有操作
-                // 动态添加新操作（示例）
-                ...store.list.map(playlist => ({
-                    id: `playlist-${playlist.songListId}`,
-                    title: `编辑 ${playlist.songListName}`,
-                    icon: 'mdi-playlist-edit',
-                    iconBg: '#3d3d3d',
-                    description: `修改歌单 ${playlist.songListName}`
-                }))
-            ];
-            console.log(`watch 变化: ${playlistActions}`)
-        },
-        { deep: false } // 深度监听（如果需要）
-    );
+    const { list } = storeToRefs(store)
+    if (Object.is(list.value.length, 0)) {
+        const { addItem, initFromLocal } = store //storeToRefs(store)
+        initFromLocal()
+    }
+    for (let i = 0; i < list.value.length; i++) {
+        if (list.value[i].songListId != undefined && list.value[i].songListName != undefined) {
+            playlistActions.value.push({
+                id: `playlist-${list.value[i].songListId}`,
+                title: `${list.value[i].songListName}`,
+                icon: list.value[i].logo, //'mdi-playlist-edit'
+                iconBg: '#3d3d3d',
+                description: `从qq导入的歌单`
+            })
+        }
+    }
 
     // 使用 store 的 $subscribe 方法监控所有变化
     unsubscribeStore = store.$subscribe((mutation, state) => {
-        console.log(`Store 变化: ${mutation.type} ${state.list }`)
+        console.log(`Store 变化: ${mutation.type} ${state.list}`)
 
         // 详细的 mutation 信息
         if (mutation.payload) {
@@ -89,12 +86,12 @@ onMounted(() => {
         }
     })
 
-    unsubscribeActionStore = store.$onAction(({name, store, args, 
-        after, 
-        onError}) => {
+    unsubscribeActionStore = store.$onAction(({ name, store, args,
+        after,
+        onError }) => {
         console.log(`action 变化: ${name} `)
         console.log("store", store, "args", args)
-        if (args[0].id != undefined && args[0].name != undefined){
+        if (args[0].id != undefined && args[0].name != undefined) {
             playlistActions.value.push({
                 id: `playlist-${args[0].id}`,
                 title: `${args[0].name}`,
@@ -113,7 +110,7 @@ onMounted(() => {
                 description: `从qq导入的歌单`
             })
         }
-        
+
 
     })
 })
@@ -173,8 +170,7 @@ const handleActionClick = (action) => {
             showCreateDialog.value = true
             break
         case 'favorites':
-            // 后续实现我喜欢歌单功能
-            console.log('我喜欢歌单')
+            router.push('/favorites')
             break
         default:
             console.log('未知操作:', action.id)

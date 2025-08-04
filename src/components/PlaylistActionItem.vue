@@ -9,7 +9,23 @@
     <div class="action-content">
       <!-- 图标区域 -->
       <div class="action-icon-wrapper">
+        <!-- 如果是URL则显示图片 -->
+        <div
+          v-if="isImageUrl(action.icon)"
+          class="action-icon image-icon"
+          :style="{ backgroundColor: action.iconBg || 'rgba(255,255,255,0.1)' }"
+        >
+          <v-img
+            :src="action.icon"
+            width="48"
+            height="48"
+            cover
+            class="action-image"
+          />
+        </div>
+        <!-- 否则显示图标 -->
         <v-avatar
+          v-else
           :color="action.iconBg || 'rgba(255,255,255,0.1)'"
           size="48"
           class="action-icon"
@@ -85,6 +101,11 @@ const getIconColor = () => {
       return 'white'
   }
 }
+
+const isImageUrl = (icon) => {
+  // 判断是否为图片URL
+  return typeof icon === 'string' && (icon.startsWith('http://') || icon.startsWith('https://'))
+}
 </script>
 
 <style scoped>
@@ -119,6 +140,26 @@ const getIconColor = () => {
 
 .playlist-action-item:hover .action-icon {
   transform: scale(1.05);
+}
+
+.image-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.action-image {
+  border-radius: 50%;
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.action-icon .v-img {
+  border-radius: 50%;
 }
 
 .action-info {

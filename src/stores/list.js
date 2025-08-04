@@ -1,5 +1,6 @@
 
 import { defineStore } from 'pinia'
+import { StorageUtil } from '../core/localStorage'
 
 export const useCounterStore = defineStore('counter', {
     state: () => {
@@ -56,6 +57,27 @@ export const useSongListStore = defineStore('song_list', () => {
     })
     const addItem = (item) => {
         list.value.push(item)
+        StorageUtil.setLocal(item.songListId, item);
+
+        let arr = StorageUtil.getLocal('all-song-list')
+        if (Array.isArray(arr)) {
+            arr = arr.push(item.songListId)
+        }
+        if (Object.is(arr, null)) {
+            arr = []
+            arr.push(item.songListId)
+        }
+        StorageUtil.setLocal('all-song-list', arr);
+    }
+
+    const initFromLocal = () => {
+        let arr = StorageUtil.getLocal('all-song-list')
+        for (let i = 0; i < arr.length; i++) {
+            const item = StorageUtil.getLocal(arr[i])
+            if (item) {
+                list.value.push(item)
+            }
+        }
     }
 
     const addItems = (itemsArray) => {
@@ -81,5 +103,5 @@ export const useSongListStore = defineStore('song_list', () => {
         list.value = []
     }
 
-    return { name, list, itemCount, lastItem,getItemById, addItem, addItems, removeItem, removeItemById, clearItems }
+    return { name, list, itemCount, lastItem, getItemById, initFromLocal, addItem, addItems, removeItem, removeItemById, clearItems }
 })

@@ -23,10 +23,10 @@
 
           <div class="import-sources">
             <v-card v-for="source in importSources" :key="source.id" class="source-card"
-              :class="{ 'selected': selectedSource?.id === source.id }" color="rgba(255,255,255,0.05)"
+              :class="{ 'selected': selectedSourceid === source.id }" color="rgba(255,255,255,0.05)"
               @click="selectSource(source)" hover>
               <v-card-text class="source-content">
-                <v-icon :color="selectedSource?.id === source.id ? 'primary' : 'white'" size="24" class="mb-2">
+                <v-icon :color="selectedSourceid === source.id ? 'primary' : 'white'" size="24" class="mb-2">
                   {{ source.icon }}
                 </v-icon>
                 <div class="source-name">{{ source.name }}</div>
@@ -37,25 +37,25 @@
 
         <!-- 导入配置 -->
         <div v-if="currentStep === 'config'" class="import-config">
-          <div v-if="selectedSource?.id === 'url'">
+          <div v-if="selectedSourceid === 'url'">
             <p class="text-body-1 text-white mb-4">请输入歌单链接：</p>
             <v-text-field v-model="importUrl" label="歌单链接" placeholder="https://..." variant="outlined" color="primary"
               :error-messages="urlError" :disabled="isImporting" class="mb-4" />
           </div>
 
-          <div v-if="selectedSource?.id === 'file'">
+          <div v-if="selectedSourceid === 'file'">
             <p class="text-body-1 text-white mb-4">请选择文件</p>
             <v-file-input v-model="importFile" label="选择文件" @change="handleFileChange" variant="outlined" color="primary"
               :error-messages="fileError" :disabled="isImporting" class="mb-4" />
           </div>
 
-          <div v-if="selectedSource?.id === 'qq'">
+          <div v-if="selectedSourceid === 'qq'">
             <p class="text-body-1 text-white mb-4">请输入QQ音乐歌单ID：</p>
             <v-text-field v-model="playlistId" label="歌单ID" placeholder="例如：1839459328" variant="outlined"
               color="primary" :error-messages="idError" :disabled="isImporting" class="mb-4" />
           </div>
 
-          <div v-if="selectedSource?.id === 'netease'">
+          <div v-if="selectedSourceid === 'netease'">
             <p class="text-body-1 text-white mb-4">请输入网易云音乐歌单ID：</p>
             <v-text-field v-model="playlistId" label="歌单ID" placeholder="例如：123456789" variant="outlined"
               color="primary" :error-messages="idError" :disabled="isImporting" class="mb-4" />
@@ -117,7 +117,7 @@
           取消
         </v-btn>
 
-        <v-btn v-if="currentStep === 'source'" color="primary" @click="nextStep" :disabled="!selectedSource">
+        <v-btn v-if="currentStep === 'source'" color="primary" @click="nextStep" :disabled="!selectedSourceid">
           下一步
         </v-btn>
 
@@ -126,7 +126,7 @@
         </v-btn>
 
         <v-btn v-if="currentStep === 'config'" color="primary" @click="startImport"
-          :disabled="!canStartImport || isImporting" :loading="isImporting">
+          :disabled="canStartImport.value || isImporting.value" :loading="isImporting">
           开始导入
         </v-btn>
 
@@ -159,6 +159,7 @@ const emit = defineEmits(['close', 'import-complete'])
 const dialogVisible = ref(false)
 const currentStep = ref('source') // 'source', 'config', 'importing', 'result'
 const selectedSource = ref(null)
+const selectedSourceid = ref(null)
 const importUrl = ref('')
 const importFile = ref(null)
 const playlistId = ref('')
@@ -179,10 +180,13 @@ const importSources = ref([
 
 // 计算属性
 const canStartImport = computed(() => {
-  if (selectedSource.value?.id === 'url') {
+  if (selectedSourceid.value === 'url') {
     return importUrl.value.trim() !== '' && !urlError.value
   }
-  if (selectedSource.value?.id === 'qq' || selectedSource.value?.id === 'netease') {
+  if (selectedSourceid.value === 'file') {
+    return importUrl.value.trim() !== '' && !urlError.value
+  }
+  if (selectedSourceid.value === 'qq' || selectedSourceid.value === 'netease') {
     return playlistId.value.trim() !== '' && !idError.value
   }
   return false
@@ -224,11 +228,11 @@ const getDialogTitle = () => {
 }
 
 const selectSource = (source) => {
-  selectedSource.value = source
+  selectedSourceid.value = source.id
 }
 
 const nextStep = () => {
-  if (currentStep.value === 'source' && selectedSource.value) {
+  if (currentStep.value === 'source' && selectedSourceid.value) {
     currentStep.value = 'config'
   }
 }
@@ -262,7 +266,9 @@ const startImport = async () => {
   progressText.value = '准备导入...'
 
   try {
-    if (selectedSource?.id === 'qq') {
+    console.log('开始导入', selectedSourceid)
+    if (selectedSourceid.value === 'qq') {
+
       let re = await doImport()
 
       // 导入成功
@@ -282,7 +288,7 @@ const startImport = async () => {
       canStartImport.value = true
       emit('import-complete', importResult.value)
     }
-    if (selectedSource?.id === 'file') {
+    if (selectedSourceid.value === 'file') {
 
     }
   } catch (error) {
@@ -317,11 +323,9 @@ const simulateImport = () => {
 
 const doImport = async () => {
   let re = await getList(playlistId.value, true)
-  StorageUtil.setLocal(re.songListId, re);
 
   const store = useSongListStore()
   const { addItem, list } = store //storeToRefs(store)
-  // Add(re)
   addItem(re)
   return re
 }
